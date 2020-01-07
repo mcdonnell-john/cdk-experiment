@@ -1,0 +1,10 @@
+{
+    "name": "lambda-dynamodb-crud-api",
+    "version": "1.0.0",
+    "author": "John McDonnell",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "moment": "^2.24.0",
+        "uuid": "3.3.3"
+    }
+}

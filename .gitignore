@@ -1,0 +1,17 @@
+.classpath.txt
+target
+.classpath
+.project
+.idea
+.settings
+.vscode
+*.iml
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+/nb-configuration.xml
+/nbactions.xml
+/lambda/node/
+/lambda/node_modules/
