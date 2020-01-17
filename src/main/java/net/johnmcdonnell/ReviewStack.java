@@ -73,7 +73,6 @@ public class ReviewStack extends Stack {
         DatabaseStack.getReviewTable().grantReadWriteData(updateReviewFunction);
         DatabaseStack.getReviewTable().grantReadWriteData(deleteReviewFunction);
 
-        // Defines an API Gateway REST API resource 
         RestApi reviewApi = RestApi.Builder.create(this, "reviewApi")
                 .restApiName("Review Service")
                 .build();

@@ -73,7 +73,6 @@ public class OrderStack extends Stack {
         DatabaseStack.getOrderTable().grantReadWriteData(updateOrderFunction);
         DatabaseStack.getOrderTable().grantReadWriteData(deleteOrderFunction);
 
-        // Defines an API Gateway REST API resource 
         RestApi orderApi = RestApi.Builder.create(this, "orderApi")
                 .restApiName("Order Service")
                 .build();

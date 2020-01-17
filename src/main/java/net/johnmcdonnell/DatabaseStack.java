@@ -15,6 +15,7 @@ import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
+import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.Table;
 
 /**
@@ -59,17 +60,20 @@ public class DatabaseStack extends Stack {
                 .tableName(PRODUCTS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
                 .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
         orderTable = Table.Builder.create(this, ORDERS_TABLE_NAME)
                 .tableName(ORDERS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
                 .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
         reviewTable = Table.Builder.create(this, REVIEWS_TABLE_NAME)
                 .tableName(REVIEWS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
                 .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
     }
     
