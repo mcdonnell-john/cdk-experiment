@@ -34,7 +34,7 @@ public class ProductStack extends Stack {
     public ProductStack(final Construct parent, final String id, final StackProps props) {
         super(parent, id, props);
 
-        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseStack.PRODUCTS_TABLE_NAME);
+        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseTables.PRODUCTS);
 
         final Function getProductFunction = Function.Builder.create(this, "GetProductItemFunction")
                 .functionName("GetProductItemFunction")

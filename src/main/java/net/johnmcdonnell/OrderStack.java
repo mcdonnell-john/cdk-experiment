@@ -35,7 +35,7 @@ public class OrderStack extends Stack {
     public OrderStack(final Construct parent, final String id, final StackProps props) {
         super(parent, id, props);
 
-        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseStack.ORDERS_TABLE_NAME);
+        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseTables.ORDERS);
 
         final Function getOrderFunction = Function.Builder.create(this, "GetOrderItemFunction")
                 .functionName("GetOrderItemFunction")

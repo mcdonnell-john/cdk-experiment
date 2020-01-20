@@ -14,6 +14,7 @@ public final class Application {
         new ProductStack(app, "ProductStack");
         new OrderStack(app, "OrderStack");
         new ReviewStack(app, "ReviewStack");
+        new InventoryStack(app, "InventoryStack");
         
         app.synth();
     }

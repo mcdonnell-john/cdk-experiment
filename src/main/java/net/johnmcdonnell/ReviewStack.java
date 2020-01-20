@@ -34,7 +34,7 @@ public class ReviewStack extends Stack {
     public ReviewStack(final Construct parent, final String id, final StackProps props) {
         super(parent, id, props);
 
-        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseStack.REVIEWS_TABLE_NAME);
+        final Map<String, String> dynamoDbEnvironmentParams = DatabaseStack.getDynamoEnvironmentParams(DatabaseTables.REVIEWS);
 
         final Function getReviewFunction = Function.Builder.create(this, "GetReviewItemFunction")
                 .functionName("GetReviewItemFunction")
