@@ -27,10 +27,12 @@ public class DatabaseStack extends Stack {
     private static Table productTable;
     private static Table orderTable;
     private static Table reviewTable;
+    private static Table inventoryTable;
 
     protected static final String PRODUCTS_TABLE_NAME = "products";
     protected static final String ORDERS_TABLE_NAME = "orders";
     protected static final String REVIEWS_TABLE_NAME = "reviews";
+    protected static final String INVENTORY_TABLE_NAME = "inventory";
 
     
     public DatabaseStack(final Construct parent, final String id) {
@@ -54,25 +56,36 @@ public class DatabaseStack extends Stack {
     public static Table getReviewTable() {
         return reviewTable;
     }
+    
+    public static Table getInventoryTable() {
+        return inventoryTable;
+    }
 
     private void initConstructs() {
         productTable = Table.Builder.create(this, PRODUCTS_TABLE_NAME)
                 .tableName(PRODUCTS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
-                .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .removalPolicy(RemovalPolicy.DESTROY) 
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
         orderTable = Table.Builder.create(this, ORDERS_TABLE_NAME)
                 .tableName(ORDERS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
-                .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .removalPolicy(RemovalPolicy.DESTROY)
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
 
         reviewTable = Table.Builder.create(this, REVIEWS_TABLE_NAME)
                 .tableName(REVIEWS_TABLE_NAME)
                 .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
-                .removalPolicy(RemovalPolicy.DESTROY) // ensure 'cdk destroy' removes it
+                .removalPolicy(RemovalPolicy.DESTROY)
+                .billingMode(BillingMode.PAY_PER_REQUEST)
+                .build();
+        
+        inventoryTable = Table.Builder.create(this, INVENTORY_TABLE_NAME)
+                .tableName(INVENTORY_TABLE_NAME)
+                .partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
+                .removalPolicy(RemovalPolicy.DESTROY)
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
     }

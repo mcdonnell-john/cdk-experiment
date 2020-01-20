@@ -1,11 +1,21 @@
 package net.johnmcdonnell;
 
+import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.apigateway.IResource;
+import software.amazon.awscdk.services.apigateway.JsonSchema;
+import software.amazon.awscdk.services.apigateway.JsonSchemaType;
+import software.amazon.awscdk.services.apigateway.JsonSchemaVersion;
 import software.amazon.awscdk.services.apigateway.LambdaIntegration;
+import software.amazon.awscdk.services.apigateway.MethodOptions;
+import software.amazon.awscdk.services.apigateway.Model;
+import software.amazon.awscdk.services.apigateway.RequestValidator;
 import software.amazon.awscdk.services.apigateway.Resource;
 import software.amazon.awscdk.services.apigateway.RestApi;
 import software.amazon.awscdk.services.lambda.Code;
@@ -76,6 +86,30 @@ public class OrderStack extends Stack {
         RestApi orderApi = RestApi.Builder.create(this, "orderApi")
                 .restApiName("Order Service")
                 .build();
+        
+        Model orderModel = Model.Builder.create(this, "OrderModel")
+                .modelName("orderModel")
+                .restApi(orderApi)
+                .contentType("application/json")
+                .schema(JsonSchema.builder()
+                        .schema(JsonSchemaVersion.DRAFT7)
+                        .description("Model for Orders")
+                        .type(JsonSchemaType.OBJECT)
+                        .properties(Stream.of(
+                                new AbstractMap.SimpleEntry<>("userId", JsonSchema.builder().type(JsonSchemaType.STRING).build()),
+                                new AbstractMap.SimpleEntry<>("productIds", JsonSchema.builder().type(JsonSchemaType.ARRAY).items(JsonSchema.builder().type(JsonSchemaType.STRING).build()).build()),
+                                new AbstractMap.SimpleEntry<>("price", JsonSchema.builder().type(JsonSchemaType.NUMBER).build()))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                        .required(Stream.of("userId", "productIds", "price").collect(Collectors.toList()))
+                        .build())
+                .build();
+        
+        RequestValidator orderBodyValidator = RequestValidator.Builder.create(this, "OrderPostValidator")
+                .requestValidatorName("orderBodyValidator")
+                .validateRequestBody(Boolean.TRUE)
+                .validateRequestParameters(Boolean.FALSE)
+                .restApi(orderApi)
+                .build();
 
         IResource apiRoot = orderApi.getRoot();
         Resource apiIdResource = apiRoot.addResource("{id}");
@@ -84,11 +118,17 @@ public class OrderStack extends Stack {
                         .build());
         apiIdResource.addMethod("GET", LambdaIntegration.Builder.create(getOrderFunction)
                         .build());
-        apiIdResource.addMethod("PATCH", LambdaIntegration.Builder.create(updateOrderFunction)
+        apiIdResource.addMethod("PUT", LambdaIntegration.Builder.create(updateOrderFunction)
                         .build());
         apiIdResource.addMethod("DELETE", LambdaIntegration.Builder.create(deleteOrderFunction)
                         .build());
-        apiRoot.addMethod("POST", LambdaIntegration.Builder.create(createOrderFunction)
+        apiRoot.addMethod("POST",
+                LambdaIntegration.Builder.create(createOrderFunction).build(),
+                MethodOptions.builder()
+                        .requestValidator(orderBodyValidator)
+                        .requestModels(Stream.of(
+                                new AbstractMap.SimpleEntry<>("application/json", orderModel))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
                         .build());
     }
 

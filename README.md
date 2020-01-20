@@ -2,6 +2,9 @@
 
 This project contains the elements/Stacks required to create a mock shopping API using AWS's serverless services.
 
+mvn package && cdk diff
+cdk deploy *Stack --require-approval never
+
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

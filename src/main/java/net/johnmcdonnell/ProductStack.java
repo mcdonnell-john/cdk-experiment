@@ -9,6 +9,8 @@ import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.apigateway.IResource;
 import software.amazon.awscdk.services.apigateway.JsonSchema;
+import software.amazon.awscdk.services.apigateway.JsonSchemaType;
+import software.amazon.awscdk.services.apigateway.JsonSchemaVersion;
 import software.amazon.awscdk.services.apigateway.LambdaIntegration;
 import software.amazon.awscdk.services.apigateway.MethodOptions;
 import software.amazon.awscdk.services.apigateway.Model;
@@ -89,8 +91,22 @@ public class ProductStack extends Stack {
                 .restApi(productApi)
                 .contentType("application/json")
                 .schema(JsonSchema.builder()
-                        .pattern("{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"description\": \"Product object model\",\"type\": \"object\",\"properties\": {\"name\": {\"type\": \"string\"},\"description\":{\"type\": \"string\"}},\"required\":[\"name\",\"description\"]}")
+                        .schema(JsonSchemaVersion.DRAFT7)
+                        .description("Model for Products")
+                        .type(JsonSchemaType.OBJECT)
+                        .properties(Stream.of(
+                                new AbstractMap.SimpleEntry<>("name", JsonSchema.builder().type(JsonSchemaType.STRING).build()),
+                                new AbstractMap.SimpleEntry<>("description", JsonSchema.builder().type(JsonSchemaType.STRING).build()))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                        .required(Stream.of("name", "description").collect(Collectors.toList()))
                         .build())
+                .build();
+        
+        RequestValidator productBodyValidator = RequestValidator.Builder.create(this, "ProductPostValidator")
+                .requestValidatorName("productBodyValidator")
+                .validateRequestBody(Boolean.TRUE)
+                .validateRequestParameters(Boolean.FALSE)
+                .restApi(productApi)
                 .build();
         
         IResource apiRoot = productApi.getRoot();
@@ -98,15 +114,12 @@ public class ProductStack extends Stack {
 
         apiRoot.addMethod("GET", LambdaIntegration.Builder.create(getProductsFunction).build());
         apiIdResource.addMethod("GET", LambdaIntegration.Builder.create(getProductFunction).build());
-        apiIdResource.addMethod("PATCH", LambdaIntegration.Builder.create(updateProductFunction).build());
+        apiIdResource.addMethod("PUT", LambdaIntegration.Builder.create(updateProductFunction).build());
         apiIdResource.addMethod("DELETE", LambdaIntegration.Builder.create(deleteProductFunction).build());
         apiRoot.addMethod("POST",
                 LambdaIntegration.Builder.create(createProductFunction).build(),
                 MethodOptions.builder()
-                        .requestValidator(RequestValidator.Builder.create(this, "ProductPostValidator")
-                                .validateRequestBody(Boolean.TRUE)
-                                .restApi(productApi)
-                                .build())
+                        .requestValidator(productBodyValidator)
                         .requestModels(Stream.of(
                                 new AbstractMap.SimpleEntry<>("application/json", productModel))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
