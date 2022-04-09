@@ -4,7 +4,7 @@
     "author": "John McDonnell",
     "license": "Apache-2.0",
     "dependencies": {
-        "moment": "^2.24.0",
+        "moment": "^2.29.2",
         "uuid": "3.3.3"
     }
 }
